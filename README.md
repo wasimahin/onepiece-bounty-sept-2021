@@ -1,3 +1,7 @@
+## 🌐 Live Dashboard
+
+👉 https://wasimahin.github.io/onepiece-bounty-sept-2021/
+
 # 🏴‍☠️ One Piece Bounty Intelligence Report
 
 An interactive data analytics dashboard analyzing bounty distribution, crew performance, regional trends, and character attributes within the One Piece universe.
