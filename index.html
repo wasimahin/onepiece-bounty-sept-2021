@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Piece · Bounty Intelligence Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:      #07101f;
+  --card:    #0d1c35;
+  --card2:   #111f3a;
+  --border:  rgba(210,165,60,0.18);
+  --gold:    #d2a53c;
+  --gold2:   #f0cc78;
+  --red:     #b83228;
+  --red2:    #d94030;
+  --teal:    #1ca68a;
+  --blue:    #2b7de9;
+  --muted:   #5e7a9e;
+  --text:    #ccdaee;
+  --white:   #eaf0f9;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+}
+
+/* ── AMBIENT GLOW ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 40% at 15% 0%,   rgba(43,125,233,0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 35% at 85% 100%,  rgba(184,50,40,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 50% 50%,   rgba(210,165,60,0.04) 0%, transparent 70%);
+}
+
+/* ── HEADER ── */
+header {
+  position:relative; z-index:1;
+  border-bottom:1px solid var(--border);
+  padding:48px 32px 36px;
+  text-align:center;
+  background:linear-gradient(180deg,rgba(7,16,31,0) 0%,rgba(7,16,31,0.6) 100%);
+}
+.header-eyebrow {
+  font-family:'Cinzel',serif;
+  font-size:0.7rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+header h1 {
+  font-family:'Cinzel Decorative',serif;
+  font-weight:700;
+  font-size:clamp(1.6rem,4vw,2.9rem);
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 55%,var(--gold) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  letter-spacing:0.04em;
+  line-height:1.15;
+}
+.header-sub {
+  margin-top:10px;
+  font-family:'Cinzel',serif;
+  font-size:0.78rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.source-badge {
+  display:inline-block;
+  margin-top:18px;
+  padding:5px 16px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:0.75rem;
+  color:var(--gold);
+  letter-spacing:0.08em;
+  background:rgba(210,165,60,0.06);
+}
+
+/* ── LAYOUT ── */
+main {
+  position:relative; z-index:1;
+  max-width:1360px;
+  margin:0 auto;
+  padding:44px 28px 90px;
+}
+
+.section-label {
+  font-family:'Cinzel',serif;
+  font-size:0.7rem;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--gold);
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.section-label span { color:var(--muted); font-size:0.65rem; letter-spacing:0.12em; }
+
+/* ── KPI ROW ── */
+.kpi-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:14px;
+  margin-bottom:48px;
+}
+.kpi {
+  background:linear-gradient(140deg,var(--card),var(--card2));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:22px 20px 18px;
+  position:relative;
+  overflow:hidden;
+  animation:rise 0.5s ease both;
+}
+.kpi::after {
+  content:'';
+  position:absolute; top:-40px; right:-40px;
+  width:100px; height:100px; border-radius:50%;
+  background:var(--accent,rgba(210,165,60,0.08));
+  filter:blur(24px);
+}
+.kpi.red  { --accent:rgba(184,50,40,0.14); border-color:rgba(184,50,40,0.22); }
+.kpi.teal { --accent:rgba(28,166,138,0.12); border-color:rgba(28,166,138,0.2); }
+.kpi.blue { --accent:rgba(43,125,233,0.12); border-color:rgba(43,125,233,0.2); }
+
+.kpi-icon { font-size:1.25rem; margin-bottom:10px; }
+.kpi-val {
+  font-family:'Cinzel',serif;
+  font-size:1.75rem;
+  font-weight:700;
+  color:var(--gold2);
+  line-height:1;
+  margin-bottom:4px;
+  letter-spacing:-0.01em;
+}
+.kpi-val.sm { font-size:1.25rem; }
+.kpi-lbl {
+  font-size:0.73rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+@keyframes rise {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.kpi:nth-child(1){animation-delay:0.05s}
+.kpi:nth-child(2){animation-delay:0.10s}
+.kpi:nth-child(3){animation-delay:0.15s}
+.kpi:nth-child(4){animation-delay:0.20s}
+.kpi:nth-child(5){animation-delay:0.25s}
+.kpi:nth-child(6){animation-delay:0.30s}
+
+/* ── CARDS ── */
+.card {
+  background:linear-gradient(140deg,var(--card),var(--card2));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:26px;
+  animation:rise 0.6s ease 0.2s both;
+}
+.card-head { margin-bottom:4px; }
+.card-title {
+  font-family:'Cinzel',serif;
+  font-size:0.8rem;
+  font-weight:600;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.card-sub {
+  font-size:0.77rem;
+  color:var(--muted);
+  margin-top:3px;
+  margin-bottom:22px;
+}
+
+/* ── GRID LAYOUTS ── */
+.grid-2    { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+.grid-3-2  { display:grid; grid-template-columns:3fr 2fr; gap:18px; margin-bottom:18px; }
+.grid-full { margin-bottom:18px; }
+
+canvas { max-height:300px; }
+
+/* ── RANKINGS TABLE ── */
+.rank-table { width:100%; border-collapse:collapse; font-size:0.86rem; }
+.rank-table th {
+  font-family:'Cinzel',serif;
+  font-size:0.68rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--gold);
+  padding:10px 14px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+.rank-table td {
+  padding:9px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  color:var(--text);
+  vertical-align:middle;
+}
+.rank-table tr:last-child td { border-bottom:none; }
+.rank-table tr:hover td { background:rgba(210,165,60,0.04); }
+
+.rank-num {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%;
+  font-family:'Cinzel',serif; font-size:0.72rem; font-weight:700;
+  background:rgba(210,165,60,0.1); border:1px solid var(--border);
+  color:var(--gold);
+}
+.rank-num.gold  { background:rgba(210,165,60,0.25); border-color:var(--gold);  color:var(--gold2); }
+.rank-num.silver{ background:rgba(160,160,170,0.2);  border-color:#9aa5b4;      color:#c0cad8; }
+.rank-num.bronze{ background:rgba(180,110,60,0.2);   border-color:#b46c3c;      color:#d4914e; }
+
+.bounty-val { font-family:'Cinzel',serif; color:var(--gold2); font-weight:600; }
+
+.bar-inline {
+  display:flex; align-items:center; gap:8px;
+}
+.bar-bg {
+  flex:1; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden;
+}
+.bar-fg {
+  height:100%; border-radius:3px;
+  background:linear-gradient(90deg,var(--gold),var(--red2));
+}
+
+/* ── DATA NOTE ── */
+.data-note {
+  font-size:0.73rem;
+  color:var(--muted);
+  background:rgba(43,125,233,0.06);
+  border:1px solid rgba(43,125,233,0.15);
+  border-radius:8px;
+  padding:8px 14px;
+  margin-top:12px;
+  display:flex; align-items:flex-start; gap:8px;
+}
+.data-note::before { content:'ℹ'; color:var(--blue); font-size:0.85rem; flex-shrink:0; }
+
+/* ── FOOTER ── */
+footer {
+  position:relative; z-index:1;
+  text-align:center;
+  padding:22px;
+  color:var(--muted);
+  font-size:0.75rem;
+  letter-spacing:0.1em;
+  border-top:1px solid var(--border);
+}
+footer a { color:var(--gold); text-decoration:none; }
+footer a:hover { text-decoration:underline; }
+
+@media(max-width:820px){
+  .grid-2,.grid-3-2 { grid-template-columns:1fr; }
+  canvas { max-height:240px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════ -->
+<header>
+  <p class="header-eyebrow">Data Analysis Project · v1.0</p>
+  <h1>One Piece<br>Bounty Intelligence Report</h1>
+  <p class="header-sub">Studying the World Government's Most Wanted</p>
+  <div class="source-badge">
+    140 Characters &nbsp;·&nbsp; 2 Datasets Combined &nbsp;·&nbsp; Sources: Kaggle
+  </div>
+</header>
+
+<main>
+
+<!-- ══ KPIs ════════════════════════════════════════════════════════ -->
+<p class="section-label">&#9670; Key Metrics</p>
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-icon">🏴‍☠️</div>
+    <div class="kpi-val">140</div>
+    <div class="kpi-lbl">Pirates Tracked</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-icon">👑</div>
+    <div class="kpi-val sm">฿5.56B</div>
+    <div class="kpi-lbl">Highest — Gol D. Roger</div>
+  </div>
+  <div class="kpi teal">
+    <div class="kpi-icon">⚖️</div>
+    <div class="kpi-val sm">฿97M</div>
+    <div class="kpi-lbl">Median Bounty</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-icon">📊</div>
+    <div class="kpi-val sm">฿399M</div>
+    <div class="kpi-lbl">Mean Bounty</div>
+  </div>
+  <div class="kpi blue">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-val sm">฿55.9B</div>
+    <div class="kpi-lbl">Total Bounty Pool</div>
+  </div>
+  <div class="kpi red">
+    <div class="kpi-icon">🌟</div>
+    <div class="kpi-val">12</div>
+    <div class="kpi-lbl">Billion-Berry Pirates</div>
+  </div>
+</div>
+
+<!-- ══ BOUNTY TIER + TOP 10 ═══════════════════════════════════════ -->
+<p class="section-label">&#9670; Hall of Infamy <span>Individual Rankings</span></p>
+<div class="grid-3-2">
+
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Top 10 Highest Individual Bounties</p>
+      <p class="card-sub">Ranked by confirmed bounty value in Berries (฿)</p>
+    </div>
+    <table class="rank-table" id="top10Table"></table>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Bounty Tier Distribution</p>
+      <p class="card-sub">How 140 tracked pirates are distributed by power tier</p>
+    </div>
+    <canvas id="tierChart"></canvas>
+  </div>
+
+</div>
+
+<!-- ══ RANKING 1: CREW ═════════════════════════════════════════════ -->
+<p class="section-label">&#9670; Ranking 1 <span>Highest Average Bounty per Crew (min. 2 members)</span></p>
+<div class="grid-full">
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Top Crews by Average Member Bounty</p>
+      <p class="card-sub">Based on each character's primary affiliation · Average of known member bounties only</p>
+    </div>
+    <canvas id="crewChart" style="max-height:320px"></canvas>
+  </div>
+</div>
+
+<!-- ══ RANKING 2: SEA REGION ══════════════════════════════════════ -->
+<p class="section-label">&#9670; Ranking 2 <span>Highest Average Bounty by Origin Sea</span></p>
+<div class="grid-full">
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Sea Region vs Average Bounty</p>
+      <p class="card-sub">Average bounty of pirates originating from each sea region · Number in brackets = pirates counted</p>
+    </div>
+    <canvas id="regionChart" style="max-height:300px"></canvas>
+  </div>
+</div>
+
+<!-- ══ RANKING 3 + 4 ═══════════════════════════════════════════════ -->
+<p class="section-label">&#9670; Rankings 3 & 4 <span>Physical Traits vs Bounty</span></p>
+<div class="grid-2">
+
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Ranking 3 · Height Range vs Avg Bounty</p>
+      <p class="card-sub">Average bounty by height bracket (characters with known height)</p>
+    </div>
+    <canvas id="heightChart"></canvas>
+    <div class="data-note">The "Under 150cm" bar is elevated by a likely data entry error — Monkey D. Luffy is recorded as 91 cm in the source dataset (actual: 174 cm), which inflates this bracket alongside his ฿1.5B bounty.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Ranking 4 · Age Range vs Avg Bounty</p>
+      <p class="card-sub">Average bounty by age group (characters with known age)</p>
+    </div>
+    <canvas id="ageChart"></canvas>
+  </div>
+
+</div>
+
+<!-- ══ ADDITIONAL FINDINGS ════════════════════════════════════════ -->
+<p class="section-label">&#9670; Additional Findings <span>Bounty Deep Dives</span></p>
+<div class="grid-2">
+
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Bounty Concentration (Top 5 vs Rest)</p>
+      <p class="card-sub">The top 5 bounties alone account for a massive share of the total pool</p>
+    </div>
+    <canvas id="concentrationChart"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <p class="card-title">Key Observations</p>
+      <p class="card-sub">Notable patterns from the combined dataset</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px" id="observations"></div>
+  </div>
+
+</div>
+
+<!-- ══ FULL CREW LEADERBOARD ══════════════════════════════════════ -->
+<p class="section-label" style="margin-top:12px">&#9670; Crew Leaderboard <span>Detailed Breakdown</span></p>
+<div class="card">
+  <div class="card-head">
+    <p class="card-title">All Qualifying Crews — Average Bounty Ranked</p>
+    <p class="card-sub">Crews with 2+ tracked members · sorted by average bounty descending</p>
+  </div>
+  <div style="overflow-x:auto;margin-top:8px">
+    <table class="rank-table" id="crewTable"></table>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  Datasets sourced from
+  <a href="https://www.kaggle.com" target="_blank">Kaggle</a>
+  &nbsp;·&nbsp; ONE PIECE © 1997 Eiichiro Oda / Shueisha &nbsp;·&nbsp; For educational & portfolio use only
+</footer>
+
+<script>
+// ══ DATA ═════════════════════════════════════════════════════════════
+const CREW_DATA = [{"crew":"Whitebeard Pirates","avg":2798000000,"count":2},{"crew":"Beasts Pirates","avg":2080275000,"count":4},{"crew":"Red Hair Pirates","avg":2071450000,"count":2},{"crew":"Big Mom Pirates","avg":1313125000,"count":4},{"crew":"Whitebeard Pirates (former)","avg":942000000,"count":2},{"crew":"Charlotte Family","avg":608625000,"count":8},{"crew":"Blackbeard Pirates","avg":489160000,"count":5},{"crew":"Revolutionary Army","avg":449000000,"count":2},{"crew":"Beasts Pirates (Tobiroppo)","avg":437600000,"count":5},{"crew":"Straw Hat Pirates","avg":316100010,"count":10}];
+const REGION_DATA = [{"region":"Grand Line","avg":676201279,"count":47},{"region":"West Blue","avg":454685714,"count":14},{"region":"East Blue","avg":397360870,"count":23},{"region":"Red Line","avg":240000000,"count":2},{"region":"South Blue","avg":177100000,"count":10},{"region":"North Blue","avg":160857143,"count":21},{"region":"Sky Islands","avg":108000000,"count":1},{"region":"Calm Belt","avg":53333333,"count":3}];
+const HEIGHT_DATA = [{"range":"500cm+","avg":1212897778,"count":18},{"range":"Under 150cm","avg":410333350,"count":6},{"range":"185–220cm","avg":330855556,"count":27},{"range":"300–500cm","avg":314150000,"count":28},{"range":"220–300cm","avg":302913350,"count":30},{"range":"150–185cm","avg":188900000,"count":15}];
+const AGE_DATA = [{"range":"55+","avg":1204810000,"count":10},{"range":"30–40","avg":362656250,"count":32},{"range":"40–55","avg":324948750,"count":32},{"range":"Under 20","avg":300000014,"count":7},{"range":"20–30","avg":191343257,"count":37}];
+const TOP10 = [["Gol D. Roger",5564800000,"Roger Pirates","East Blue"],["Edward Newgate",5046000000,"Whitebeard Pirates","Grand Line"],["Kaidou",4611100000,"Beasts Pirates","Grand Line"],["Charlotte Linlin",4388000000,"Big Mom Pirates","Grand Line"],["Shanks",4048900000,"Red Hair Pirates","West Blue"],["Marshall D. Teach",2247600000,"Blackbeard Pirates","Grand Line"],["Monkey D. Luffy",1500000000,"Straw Hat Pirates","East Blue"],["King",1390000000,"Beasts Pirates","Grand Line"],["Marco",1374000000,"Whitebeard Pirates (former)","Grand Line"],["Queen",1320000000,"Beasts Pirates","Grand Line"]];
+const TIERS = {"5B+":2,"1B–5B":10,"100M–1B":55,"1M–100M":71,"Under 1M":2};
+const TOP5_TOTAL = TOP10.slice(0,5).reduce((s,r)=>s+r[1],0);
+const GRAND_TOTAL = 55906860600;
+
+// ══ THEME ════════════════════════════════════════════════════════════
+const GOLD='#d2a53c',GOLD2='#f0cc78',RED='#b83228',RED2='#d94030';
+const TEAL='#1ca68a',BLUE='#2b7de9',MUTED='#5e7a9e',CARD='#0d1c35';
+const PALETTE=[GOLD,RED2,TEAL,BLUE,'#9b59b6','#e67e22','#2ecc71','#e74c3c','#1abc9c','#f39c12'];
+const RANK_PALETTE=['#d2a53c','#9aa5b4','#b46c3c','#5e7a9e','#5e7a9e','#5e7a9e','#5e7a9e','#5e7a9e','#5e7a9e','#5e7a9e'];
+
+Chart.defaults.color='#5e7a9e';
+Chart.defaults.font.family="'DM Sans',sans-serif";
+const TT={backgroundColor:CARD,borderColor:'rgba(210,165,60,0.3)',borderWidth:1,titleColor:GOLD2,bodyColor:'#ccdaee',padding:12,cornerRadius:8};
+const GRID={color:'rgba(255,255,255,0.05)',drawBorder:false};
+
+function fmtB(v){
+  if(v>=1e9) return '฿'+(v/1e9).toFixed(2)+'B';
+  if(v>=1e6) return '฿'+(v/1e6).toFixed(0)+'M';
+  return '฿'+v.toLocaleString();
+}
+
+// ══ TOP 10 TABLE ═════════════════════════════════════════════════════
+const tbl=document.getElementById('top10Table');
+const maxB=TOP10[0][1];
+tbl.innerHTML=`<thead><tr>
+  <th>#</th><th>Character</th><th>Crew</th><th>Bounty</th><th style="min-width:100px"></th>
+</tr></thead>`;
+const tb=document.createElement('tbody');
+TOP10.forEach(([name,b,crew,region],i)=>{
+  const cls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+  const w=Math.round(b/maxB*100);
+  tb.innerHTML+=`<tr>
+    <td><span class="rank-num ${cls}">${i+1}</span></td>
+    <td style="font-weight:500;color:var(--white)">${name}</td>
+    <td style="color:var(--muted);font-size:0.8rem">${crew}</td>
+    <td class="bounty-val">${fmtB(b)}</td>
+    <td><div class="bar-inline"><div class="bar-bg"><div class="bar-fg" style="width:${w}%"></div></div></div></td>
+  </tr>`;
+});
+tbl.appendChild(tb);
+
+// ══ TIER DONUT ═══════════════════════════════════════════════════════
+new Chart(document.getElementById('tierChart'),{
+  type:'doughnut',
+  data:{
+    labels:Object.keys(TIERS),
+    datasets:[{
+      data:Object.values(TIERS),
+      backgroundColor:[RED,GOLD,TEAL,BLUE,MUTED],
+      borderColor:CARD,borderWidth:3,hoverOffset:8
+    }]
+  },
+  options:{
+    cutout:'60%',
+    plugins:{
+      legend:{position:'bottom',labels:{color:'#ccdaee',padding:12,boxWidth:12,usePointStyle:true}},
+      tooltip:{...TT,callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed} pirates (${(ctx.parsed/140*100).toFixed(1)}%)`}}
+    }
+  }
+});
+
+// ══ CREW BAR ═════════════════════════════════════════════════════════
+const crewLabels = CREW_DATA.map(d=>d.crew);
+const crewVals   = CREW_DATA.map(d=>d.avg);
+new Chart(document.getElementById('crewChart'),{
+  type:'bar',
+  data:{
+    labels:crewLabels,
+    datasets:[{
+      label:'Avg Bounty (฿)',
+      data:crewVals,
+      backgroundColor:RANK_PALETTE,
+      borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    plugins:{
+      legend:{display:false},
+      tooltip:{...TT,callbacks:{
+        label:ctx=>` Avg: ${fmtB(ctx.parsed.x)}`,
+        afterLabel:ctx=>`  Members counted: ${CREW_DATA[ctx.dataIndex].count}`
+      }}
+    },
+    scales:{
+      x:{grid:GRID,ticks:{color:MUTED,callback:v=>v>=1e9?'฿'+(v/1e9).toFixed(1)+'B':'฿'+(v/1e6).toFixed(0)+'M'}},
+      y:{grid:{display:false},ticks:{color:'#ccdaee',font:{size:11}}}
+    }
+  }
+});
+
+// ══ REGION BAR ═══════════════════════════════════════════════════════
+new Chart(document.getElementById('regionChart'),{
+  type:'bar',
+  data:{
+    labels:REGION_DATA.map(d=>`${d.region} [${d.count}]`),
+    datasets:[{
+      label:'Avg Bounty',
+      data:REGION_DATA.map(d=>d.avg),
+      backgroundColor:PALETTE,
+      borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    plugins:{
+      legend:{display:false},
+      tooltip:{...TT,callbacks:{
+        label:ctx=>` Avg: ${fmtB(ctx.parsed.x)}`,
+        afterLabel:ctx=>`  Pirates from this region: ${REGION_DATA[ctx.dataIndex].count}`
+      }}
+    },
+    scales:{
+      x:{grid:GRID,ticks:{color:MUTED,callback:v=>v>=1e9?'฿'+(v/1e9).toFixed(1)+'B':'฿'+(v/1e6).toFixed(0)+'M'}},
+      y:{grid:{display:false},ticks:{color:'#ccdaee',font:{size:11}}}
+    }
+  }
+});
+
+// ══ HEIGHT BAR ═══════════════════════════════════════════════════════
+// Sort by height order for chart
+const HEIGHT_ORDER=['Under 150cm','150–185cm','185–220cm','220–300cm','300–500cm','500cm+'];
+const hSorted=HEIGHT_ORDER.map(r=>HEIGHT_DATA.find(d=>d.range===r));
+new Chart(document.getElementById('heightChart'),{
+  type:'bar',
+  data:{
+    labels:hSorted.map(d=>`${d.range}\n[n=${d.count}]`),
+    datasets:[{
+      label:'Avg Bounty',
+      data:hSorted.map(d=>d.avg),
+      backgroundColor:[MUTED,BLUE,TEAL,GOLD,RED2,RED],
+      borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{
+    plugins:{
+      legend:{display:false},
+      tooltip:{...TT,callbacks:{
+        label:ctx=>` Avg: ${fmtB(ctx.parsed.y)}`,
+        afterLabel:ctx=>`  Count: ${hSorted[ctx.dataIndex].count}`
+      }}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#ccdaee',font:{size:10}}},
+      y:{grid:GRID,ticks:{color:MUTED,callback:v=>v>=1e9?'฿'+(v/1e9).toFixed(1)+'B':'฿'+(v/1e6).toFixed(0)+'M'}}
+    }
+  }
+});
+
+// ══ AGE BAR ══════════════════════════════════════════════════════════
+const AGE_ORDER=['Under 20','20–30','30–40','40–55','55+'];
+const aSorted=AGE_ORDER.map(r=>AGE_DATA.find(d=>d.range===r));
+new Chart(document.getElementById('ageChart'),{
+  type:'bar',
+  data:{
+    labels:aSorted.map(d=>`${d.range}\n[n=${d.count}]`),
+    datasets:[{
+      label:'Avg Bounty',
+      data:aSorted.map(d=>d.avg),
+      backgroundColor:[MUTED,BLUE,TEAL,GOLD,RED],
+      borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{
+    plugins:{
+      legend:{display:false},
+      tooltip:{...TT,callbacks:{
+        label:ctx=>` Avg: ${fmtB(ctx.parsed.y)}`,
+        afterLabel:ctx=>`  Count: ${aSorted[ctx.dataIndex].count}`
+      }}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#ccdaee',font:{size:10}}},
+      y:{grid:GRID,ticks:{color:MUTED,callback:v=>v>=1e9?'฿'+(v/1e9).toFixed(1)+'B':'฿'+(v/1e6).toFixed(0)+'M'}}
+    }
+  }
+});
+
+// ══ CONCENTRATION DONUT ══════════════════════════════════════════════
+const rest=GRAND_TOTAL-TOP5_TOTAL;
+new Chart(document.getElementById('concentrationChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Top 5 Pirates','Remaining 135'],
+    datasets:[{
+      data:[TOP5_TOTAL,rest],
+      backgroundColor:[RED,MUTED],
+      borderColor:CARD,borderWidth:3,hoverOffset:6
+    }]
+  },
+  options:{
+    cutout:'62%',
+    plugins:{
+      legend:{position:'bottom',labels:{color:'#ccdaee',padding:14,boxWidth:12,usePointStyle:true}},
+      tooltip:{...TT,callbacks:{
+        label:ctx=>{
+          const pct=(ctx.parsed/GRAND_TOTAL*100).toFixed(1);
+          return ` ${fmtB(ctx.parsed)} (${pct}% of total pool)`;
+        }
+      }}
+    }
+  }
+});
+
+// ══ OBSERVATIONS ═════════════════════════════════════════════════════
+const obs=[
+  {icon:'📍',title:'Grand Line dominates by region',text:'Pirates from the Grand Line have an average bounty of ฿676M — nearly 1.5× West Blue (฿455M) and 4× Calm Belt (฿53M).'},
+  {icon:'👴',title:'Older pirates are significantly more wanted',text:'The 55+ age group averages ฿1.2B — over 6× the 20–30 age group (฿191M), suggesting experience and longevity translates directly to threat level.'},
+  {icon:'📏',title:'Size matters — but not linearly',text:'The 500cm+ bracket (giants, Zoan users) averages ฿1.2B. However, the relationship is non-linear: mid-range heights (220–300cm) aren\'t far behind.'},
+  {icon:'💀',title:'Extreme bounty inequality',text:`The top 5 pirates hold ${(TOP5_TOTAL/GRAND_TOTAL*100).toFixed(1)}% of the entire tracked bounty pool — a classic power-law distribution of infamy.`},
+  {icon:'🏴','title':'Straw Hats punch below average',text:'The Straw Hat Pirates average ฿316M — below the Beasts Pirates (฿2.08B) and Whitebeard Pirates (฿2.8B), though they are the most tracked crew (10 members).'},
+];
+const obsEl=document.getElementById('observations');
+obs.forEach(o=>{
+  obsEl.innerHTML+=`
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid rgba(255,255,255,0.05)">
+      <span style="font-size:1.15rem;flex-shrink:0">${o.icon}</span>
+      <div>
+        <div style="font-weight:500;color:var(--white);font-size:0.83rem;margin-bottom:3px">${o.title}</div>
+        <div style="font-size:0.78rem;color:var(--muted);line-height:1.55">${o.text}</div>
+      </div>
+    </div>`;
+});
+
+// ══ CREW LEADERBOARD TABLE ═══════════════════════════════════════════
+const ct=document.getElementById('crewTable');
+ct.innerHTML=`<thead><tr>
+  <th>#</th><th>Crew / Faction</th><th>Members</th><th>Avg Bounty</th><th style="min-width:140px">Relative Scale</th>
+</tr></thead>`;
+const ctb=document.createElement('tbody');
+const maxCrewAvg=CREW_DATA[0].avg;
+CREW_DATA.forEach((d,i)=>{
+  const cls=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+  const w=Math.round(d.avg/maxCrewAvg*100);
+  ctb.innerHTML+=`<tr>
+    <td><span class="rank-num ${cls}">${i+1}</span></td>
+    <td style="font-weight:500;color:var(--white)">${d.crew}</td>
+    <td style="color:var(--muted);text-align:center">${d.count}</td>
+    <td class="bounty-val">${fmtB(d.avg)}</td>
+    <td><div class="bar-inline"><div class="bar-bg"><div class="bar-fg" style="width:${w}%"></div></div><span style="color:var(--muted);font-size:0.75rem;white-space:nowrap">${w}%</span></div></td>
+  </tr>`;
+});
+ct.appendChild(ctb);
+</script>
+</body>
+</html>
