@@ -1,26 +1,70 @@
+# 🏴‍☠️ One Piece Bounty Intelligence Report
+
+An interactive data analytics dashboard that analyzes bounty distribution, crew performance, regional trends, and character attributes within the One Piece universe.
+
+This project transforms raw, unstructured datasets into a structured, insight-driven intelligence report using modern data visualization and analytics techniques.
+
+---
+
 ## 🌐 Live Dashboard
 
 👉 https://wasimahin.github.io/onepiece-bounty-sept-2021/
 
-# 🏴‍☠️ One Piece Bounty Intelligence Report
-
-An interactive data analytics dashboard analyzing bounty distribution, crew performance, regional trends, and character attributes within the One Piece universe.
-
-This project combines multiple datasets and transforms them into a structured, insight-driven report using modern data visualization techniques.
+Explore the full interactive dashboard to view dynamic visualizations, rankings, and analytical insights.
 
 ---
 
-## 📊 Project Overview
+## 📊 Project Objective
 
-The goal of this project is to simulate a real-world analytics scenario by answering:
+This project simulates a real-world analytics scenario by answering:
 
-> How can we analyze and interpret performance, hierarchy, and influence within a fictional universe using structured data?
+> How can we analyze performance, hierarchy, and influence using structured data?
 
-By treating bounty as a proxy for “value” or “risk level,” this project explores patterns similar to business analytics problems such as:
-- market segmentation  
+By treating **bounty as a proxy for value and risk**, this project applies business intelligence concepts to uncover patterns in:
 - performance ranking  
-- concentration of value  
+- value concentration  
+- segmentation across groups  
 - behavioral and structural trends  
+
+---
+
+## 📂 Data Sources & Scope
+
+- Combined datasets sourced from **Kaggle**
+- Data reflects information available **up to September 2021 (Wano Arc period)**
+- Includes character-level attributes such as:
+  - bounty values  
+  - affiliations  
+  - origin regions  
+  - age and height  
+
+⚠️ Note: Any developments, bounty changes, or characters introduced after September 2021 are not reflected in this dataset.
+
+---
+
+## 📸 Dashboard Preview
+
+### 🔹 Overview
+High-level KPI summary including total bounty pool, average values, and top-tier distribution.
+
+<img width="1323" height="520" alt="image" src="https://github.com/user-attachments/assets/57438050-0d04-4fa8-ad43-b8b954fd22a2" />
+
+
+---
+
+### 🔹 Top 10 & Tier Distribution
+Breakdown of highest-value characters and distribution across bounty tiers.
+
+<img width="1315" height="644" alt="image" src="https://github.com/user-attachments/assets/d9cd380e-46f2-4773-ba13-4d5216bc898f" />
+
+
+---
+
+### 🔹 Crew & Regional Analysis
+Comparison of crew-level performance and regional contribution to overall bounty.
+
+<img width="1319" height="965" alt="image" src="https://github.com/user-attachments/assets/dc4f8ba3-f07b-4fcc-b0b9-df4aaae139dd" />
+
 
 ---
 
@@ -30,102 +74,52 @@ By treating bounty as a proxy for “value” or “risk level,” this project 
 - **JavaScript (Chart.js)** → Data visualization  
 - **HTML/CSS** → Dashboard interface  
 - **GitHub Pages** → Deployment  
-- **AI (Claude / ChatGPT)** → Assisted in structuring dashboard logic, refining insights, and improving UI implementation  
+- **AI (Claude / ChatGPT)** → Assisted development, insight generation, and dashboard structuring  
 
 ---
 
-## 📂 Data Sources
+## 📈 Key Insights
 
-- Combined datasets sourced from **Kaggle**
-- Custom cleaning and transformation applied to:
-  - remove inconsistencies  
-  - standardize bounty values  
-  - extract usable features (age, height, affiliation)
-
----
-
-## 📈 Key Features
-
-### 🔹 KPI Dashboard
-- Total bounty pool
-- Median, mean, and max bounty
-- Count of high-tier characters
-
-### 🔹 Top 10 Bounty Rankings
-- Visual ranking of highest-value characters
-- Relative scale comparison
-
-### 🔹 Crew Performance Analysis
-- Average bounty per crew
-- Identification of strongest organizations
-
-### 🔹 Regional Analysis
-- Bounty comparison across origin regions
-- Grand Line dominance highlighted
-
-### 🔹 Physical Attribute Analysis
-- Height vs bounty trends  
-- Age vs bounty distribution  
-
-### 🔹 Bounty Concentration Analysis
-- Top 5 characters vs total pool
-- Demonstrates power-law distribution
-
----
-
-## 🧠 Key Insights
-
-- **Extreme inequality exists**: Top characters control a large portion of total bounty value  
-- **Grand Line origin strongly correlates with higher bounty levels**  
-- **Older characters tend to have significantly higher average bounties**  
-- **Crew affiliation is a major driver of perceived “value”**  
-- **Physical attributes (height, age) show non-linear relationships with bounty**
+- **Power-law distribution:** Top pirates control a disproportionate share of total bounty  
+- **Regional dominance:** Grand Line characters have significantly higher average bounties  
+- **Experience factor:** Older characters tend to have higher bounties  
+- **Crew impact:** Affiliation strongly influences individual value  
+- **Non-linear traits:** Physical attributes show complex relationships with bounty  
 
 ---
 
 ## 🤖 AI Integration
 
 AI tools (Claude / ChatGPT) were used to:
-- Assist in structuring the dashboard layout  
+- Structure dashboard layout and logic  
+- Assist in data cleaning and transformation strategies  
 - Generate and refine analytical insights  
-- Improve code readability and visualization logic  
-- Enhance storytelling and presentation  
+- Improve visualization design and storytelling  
 
-This project demonstrates how AI can accelerate:
-- data analysis  
+This project demonstrates how AI can enhance:
+- data workflows  
 - insight generation  
-- front-end development  
+- development efficiency  
 
 ---
 
-## 🌐 Live Dashboard
+## 🎯 What This Project Demonstrates
 
-👉 https://wasimahin.github.io/onepiece-bounty-sept-2021/
-
----
-
-## 🎯 Why This Project Matters
-
-This project demonstrates:
 - Data cleaning and transformation  
 - Dashboard design and visualization  
-- Business-style analytical thinking  
-- Insight generation and storytelling  
-- AI-assisted workflow integration  
-
-Although based on fictional data, the methodology directly applies to:
-- business intelligence  
-- performance analytics  
-- strategic decision-making  
+- Analytical thinking and insight generation  
+- Business intelligence fundamentals  
+- AI-assisted development workflows  
 
 ---
 
-## 📌 Future Improvements
+## 🚀 Future Improvements
 
+- Update dataset with post-2021 bounty changes  
 - Add SQL-based data pipeline  
-- Integrate real-time filtering and interactivity  
-- Expand dataset with time-series analysis  
 - Build Power BI version of the dashboard  
+- Introduce interactive filtering and drill-down features  
+- Expand dataset for time-series analysis  
 
 ---
 
